@@ -1,0 +1,51 @@
+.beneficios {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f3f3f3;
+  border-radius: 10px;
+}
+
+.beneficios ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.beneficios li {
+  margin: 6px 0;
+}
+
+.resumen {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fff8e1;
+  border: 1px solid #ffd54f;
+  border-radius: 8px;
+}
+
+.resumen ul {
+  list-style: none;
+  padding-left: 0;
+}
+.botones {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.botonEditar {
+  background-color: #ffc107;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.botonEliminar {
+  background-color: #dc3545;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}

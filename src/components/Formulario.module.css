@@ -1,0 +1,35 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gridOpciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.precio {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.precio span {
+  color: green;
+  font-weight: bold;
+}
+
+.botonEnvio {
+  padding: 10px;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.activo {
+  border: 2px solid red;
+}

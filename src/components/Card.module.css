@@ -1,0 +1,30 @@
+.producto {
+  width: 100%;
+  max-width: 400px;
+}
+
+.imagenFondo {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+}
+
+.miniaturas {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.miniaturas img {
+  width: 80px;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.miniaturas img:hover {
+  transform: scale(1.05);
+}
