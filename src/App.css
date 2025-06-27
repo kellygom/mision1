@@ -1,22 +1,22 @@
 .contenedor {
   display: flex;
-  justify-content: center;
-  padding: 2rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
   background-color: #f5f5f5;
 }
 
 .contenido {
   display: flex;
-  gap: 2rem;
-  max-width: 1200px;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
+  max-width: 600px; /* puedes ajustar según tu diseño */
+  gap: 20px;
 }
 
 .columnaFormulario {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex: 1;
+  width: 100%;
 }
 
 .resumenPedido {
@@ -37,4 +37,36 @@
 
 .resumenPedido li {
   margin-bottom: 0.3rem;
+}
+.banner-envio {
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  width: 100%;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+.header-info {
+  text-align: center;
+  background-color: #f5f5f5;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.envioGratis,
+.pagoEntrega {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin: 5px 0;
+}
+
+.fondoAmarillo {
+  background-color: yellow;
+  padding: 0px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 25px;
 }

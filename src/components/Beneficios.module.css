@@ -1,0 +1,16 @@
+.beneficios {
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.beneficios ul {
+  list-style: none;
+  padding: 0;
+}
+
+.beneficios li {
+  margin-bottom: 8px;
+}
