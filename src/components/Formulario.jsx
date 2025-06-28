@@ -37,7 +37,7 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
 
   const enviarDatos = async () => {
     try {
-      const respuesta = await fetch("https://landing-backend.onrender.com/pedidos", {
+      const respuesta = await fetch("https://landing-backend-1-v2eh.onrender.com/api/pedidos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)
