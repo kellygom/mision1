@@ -3,38 +3,43 @@ import styles from './Formulario.module.css';
 function Formulario({ form, setForm, onPagoContraentrega }) {
   const { producto } = form;
 
+  // Manejo de campos generales
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
+  // Manejo de campos del producto
   const handleProductoChange = (e) => {
     const { name, value } = e.target;
     setForm({
       ...form,
       producto: {
         ...producto,
-        [name]: name === 'cantidad' || name === 'talla' ? parseInt(value) : value
+        [name]: ['talla', 'cantidad'].includes(name) ? parseInt(value) || '' : value
       }
     });
   };
 
+  // Control para limitar la cantidad a 1 o 2
   const handleCantidadChange = (e) => {
-    const valor = Math.min(2, parseInt(e.target.value) || 1);
+    let valor = parseInt(e.target.value);
+    if (isNaN(valor)) valor = 1;
+    valor = Math.min(2, Math.max(1, valor));
     setForm({
       ...form,
-      producto: {
-        ...producto,
-        cantidad: valor
-      }
+      producto: { ...producto, cantidad: valor }
     });
   };
 
+  // Calcular total dinámico
   const calcularTotal = () => {
-    const cantidad = producto.cantidad;
+    const { cantidad } = producto;
     const precioUnitario = 90000;
     return cantidad === 2 ? 160000 : cantidad * precioUnitario;
   };
 
+  // Enviar datos a backend
   const enviarDatos = async () => {
     try {
       const respuesta = await fetch("https://landing-backend-1-v2eh.onrender.com/api/pedidos", {
@@ -43,21 +48,19 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
         body: JSON.stringify(form)
       });
 
-      if (!respuesta.ok) {
-        throw new Error("Error al enviar datos al backend");
-      }
+      if (!respuesta.ok) throw new Error("Error al enviar datos");
 
       const resultado = await respuesta.json();
-      console.log("✅ Pedido guardado en el backend:", resultado);
+      console.log("✅ Pedido enviado:", resultado);
+      alert("✅ ¡Tu pedido fue registrado exitosamente!");
 
-      // Confirmación local
       onPagoContraentrega({ ...form, id: Date.now() });
 
-      // Reiniciar formulario
+      // Reiniciar
       setForm({
         nombre: '',
-        telefono: '',
         cedula: '',
+        telefono: '',
         direccion: '',
         barrio: '',
         ciudad: '',
@@ -72,8 +75,8 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
       });
 
     } catch (error) {
-      console.error("❌ Error al enviar datos:", error);
-      alert("Hubo un error al enviar tu pedido. Intenta más tarde.");
+      console.error("❌ Error:", error);
+      alert("❌ Hubo un error al enviar tu pedido. Intenta más tarde.");
     }
   };
 
@@ -97,6 +100,7 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
         </p>
       </div>
 
+      {/* Datos personales */}
       <fieldset>
         <legend>🧍 Datos Personales</legend>
         <input name="nombre" placeholder="Nombre completo" value={form.nombre} onChange={handleChange} required />
@@ -104,6 +108,7 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
         <input name="telefono" placeholder="Celular" value={form.telefono} onChange={handleChange} required />
       </fieldset>
 
+      {/* Dirección */}
       <fieldset>
         <legend>📦 Dirección de Envío</legend>
         <input name="direccion" placeholder="Dirección" value={form.direccion} onChange={handleChange} />
@@ -112,6 +117,7 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
         <input name="departamento" placeholder="Departamento" value={form.departamento} onChange={handleChange} />
       </fieldset>
 
+      {/* Producto */}
       <fieldset>
         <legend>👟 Detalles del Producto</legend>
 
@@ -131,14 +137,9 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
                   producto: { ...form.producto, color: colorObj.nombre }
                 })
               }
-              className={`${styles.colorOption} ${
-                form.producto.color === colorObj.nombre ? styles.activo : ""
-              }`}
+              className={`${styles.colorOption} ${form.producto.color === colorObj.nombre ? styles.activo : ""}`}
             >
-              <span
-                className={styles.colorCircle}
-                style={{ backgroundColor: colorObj.codigo }}
-              ></span>
+              <span className={styles.colorCircle} style={{ backgroundColor: colorObj.codigo }}></span>
               {colorObj.nombre}
             </button>
           ))}
