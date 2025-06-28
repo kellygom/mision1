@@ -1,9 +1,8 @@
 .beneficios {
-  margin-top: 20px;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  text-align: left;  /* o center si quieres centrar texto también */
+  margin: 20px 0;
 }
 
 .beneficios ul {
@@ -11,6 +10,3 @@
   padding: 0;
 }
 
-.beneficios li {
-  margin-bottom: 8px;
-}

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "./App.css";
-import Registro from "./components/Registro";
 import Card from "./components/Card";
 import Tarea from "./components/Tarea";
 import Beneficios from "./components/Beneficios";
@@ -61,54 +60,69 @@ function App() {
   };
 
   return (
-    <div className="contenedor">
+   <div className="contenedor">
       <div className="fondoAmarillo">
-        <p className="envioGratis">🚚 Envío Gratis a todo el país / 💵 Pagas al recibir</p>
-      </div>
-
-      <div className="contenido">
-        <Card />
-
-        <div className="columnaFormulario">
-          <Registro />
-          <Beneficios />
-
-          {mostrarResumen && pedidos.length > 0 && (
-            <div className="resumenPedidos">
-              <h2>📝 Pedidos Realizados</h2>
-              {pedidos.map((pedido) => (
-                <Tarea
-                  key={pedido.id}
-                  form={pedido}
-                  mostrarResumen={true}
-                  onEliminar={() => eliminarPedido(pedido.id)}
-                  onEditar={() => editarPedido(pedido)}
-                />
-              ))}
-            </div>
-          )}
+          <p className="envioGratis">🚚 Envío Gratis a todo el país / 💵 Pagas al recibir</p>
         </div>
+
+        <div className="contenido"> {/* Este contenedor organiza izquierda y derecha */}
+          
+          {/* 🟢 Columna izquierda: Marketing, Beneficios, Botón */}
+          <div className="columnaIzquierda">
+            <div className="mensajeMarketing">
+              <h1><strong>Jordan Cadence ⭐⭐⭐⭐⭐ </strong></h1>
+              <hr />
+              <h2>¡Descubre el estilo y confort!</h2>
+              <p>
+                La combinación perfecta entre diseño moderno y máxima comodidad.<br />
+                Camina con actitud, pisa con confianza.
+              </p>
+            </div>
+
+            <Beneficios />
+
+            <button className="botonFlotante" onClick={() => setMostrarModal(true)}>
+              PAGO CONTRA ENTREGA
+            </button>
+
+            {mostrarResumen && pedidos.length > 0 && (
+              <div className="resumenPedidos">
+                <h2>📝 Pedidos Realizados</h2>
+                {pedidos.map((pedido) => (
+                  <Tarea
+                    key={pedido.id}
+                    form={pedido}
+                    mostrarResumen={true}
+                    onEliminar={() => eliminarPedido(pedido.id)}
+                    onEditar={() => editarPedido(pedido)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 🔵 Columna derecha: Card (imagenes del producto) */}
+          <div className="columnaDerecha">
+            <Card />
+          </div>
+
+        </div>
+
+        {/* Modal */}
+        <Modal
+          visible={mostrarModal}
+          onClose={() => setMostrarModal(false)}
+          form={form}
+          setForm={setForm}
+          onPagoContraentrega={(pedidoCompleto) => {
+            agregarPedido({
+              ...pedidoCompleto,
+              id: Date.now()
+            });
+          }}
+        />
       </div>
 
-      {/* ✅ Botón que abre el modal */}
-      <button onClick={() => setMostrarModal(true)}>
-        PAGO CONTRA ENTREGA
-      </button>
-
-      {/* ✅ Modal con Formulario */}
-      <Modal
-        visible={mostrarModal}
-        onClose={() => setMostrarModal(false)}
-        form={form}
-        setForm={setForm}
-        onPagoContraentrega={(pedidoCompleto) => {
-          agregarPedido({
-            ...pedidoCompleto,
-            id: Date.now()
-          });
-        }}
-      />
-    </div>
   );
 }
 

@@ -20,25 +20,66 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
 
   const handleCantidadChange = (e) => {
     const valor = Math.min(2, parseInt(e.target.value) || 1);
-    setForm({ 
-      ...form, 
-      producto: { 
-        ...producto, 
-        cantidad: valor 
-      } 
+    setForm({
+      ...form,
+      producto: {
+        ...producto,
+        cantidad: valor
+      }
     });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onPagoContraentrega({ ...form, id: Date.now() });
   };
 
   const calcularTotal = () => {
     const cantidad = producto.cantidad;
     const precioUnitario = 90000;
-    if (cantidad === 2) return 160000;
-    return cantidad * precioUnitario;
+    return cantidad === 2 ? 160000 : cantidad * precioUnitario;
+  };
+
+  const enviarDatos = async () => {
+    try {
+      const respuesta = await fetch("https://landing-backend.onrender.com/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
+
+      if (!respuesta.ok) {
+        throw new Error("Error al enviar datos al backend");
+      }
+
+      const resultado = await respuesta.json();
+      console.log("✅ Pedido guardado en el backend:", resultado);
+
+      // Confirmación local
+      onPagoContraentrega({ ...form, id: Date.now() });
+
+      // Reiniciar formulario
+      setForm({
+        nombre: '',
+        telefono: '',
+        cedula: '',
+        direccion: '',
+        barrio: '',
+        ciudad: '',
+        departamento: '',
+        producto: {
+          modelo: 'UltraFlex Pro',
+          color: '',
+          talla: '',
+          cantidad: 1,
+          precio: 90000
+        }
+      });
+
+    } catch (error) {
+      console.error("❌ Error al enviar datos:", error);
+      alert("Hubo un error al enviar tu pedido. Intenta más tarde.");
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    enviarDatos();
   };
 
   return (
@@ -75,43 +116,39 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
         <legend>👟 Detalles del Producto</legend>
 
         <label>Color:</label>
-          <div className={styles.gridOpciones}>
-            {[
-              { nombre: "Negro", codigo: "#000000" },
-              { nombre: "Blanco", codigo: "#FFFFFF" },
-              { nombre: "Rojo", codigo: "#FF0000" }
-            ].map((colorObj) => (
-              <button
-                type="button"
-                key={colorObj.nombre}
-                onClick={() =>
-                  setForm({
-                    ...form,
-                    producto: { ...form.producto, color: colorObj.nombre }
-                  })
-                }
-                className={`${styles.colorOption} ${
-                  form.producto.color === colorObj.nombre ? styles.activo : ""
-                }`}
-              >
-                <span
-                  className={styles.colorCircle}
-                  style={{ backgroundColor: colorObj.codigo }}
-                ></span>
-                {colorObj.nombre}
-              </button>
-            ))}
-          </div>
+        <div className={styles.gridOpciones}>
+          {[
+            { nombre: "Negro", codigo: "#000000" },
+            { nombre: "Blanco", codigo: "#FFFFFF" },
+            { nombre: "Rojo", codigo: "#FF0000" }
+          ].map((colorObj) => (
+            <button
+              type="button"
+              key={colorObj.nombre}
+              onClick={() =>
+                setForm({
+                  ...form,
+                  producto: { ...form.producto, color: colorObj.nombre }
+                })
+              }
+              className={`${styles.colorOption} ${
+                form.producto.color === colorObj.nombre ? styles.activo : ""
+              }`}
+            >
+              <span
+                className={styles.colorCircle}
+                style={{ backgroundColor: colorObj.codigo }}
+              ></span>
+              {colorObj.nombre}
+            </button>
+          ))}
+        </div>
 
-
-          {/* 👇 Esto muestra el color elegido */}
-          {form.producto.color && (
-            <p className={styles.colorSeleccionado}>
-              Color seleccionado: <strong>{form.producto.color}</strong>
-            </p>
-          )}
-
-
+        {form.producto.color && (
+          <p className={styles.colorSeleccionado}>
+            Color seleccionado: <strong>{form.producto.color}</strong>
+          </p>
+        )}
 
         <label>Talla:</label>
         <select name="talla" value={producto.talla} onChange={handleProductoChange} required>
