@@ -44,7 +44,7 @@ function App() {
         color: '',
         talla: '',
         cantidad: 1,
-        precio: 150000
+        precio: 90.000
       }
     });
     setMostrarResumen(true);
