@@ -66,7 +66,7 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
         ciudad: '',
         departamento: '',
         producto: {
-          modelo: 'UltraFlex Pro',
+          modelo: 'Jordan Cadence',
           color: '',
           talla: '',
           cantidad: 1,
