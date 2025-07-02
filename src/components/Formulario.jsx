@@ -48,7 +48,10 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
         body: JSON.stringify(form)
       });
 
-      if (!respuesta.ok) throw new Error("Error al enviar datos");
+      if (!respuesta.ok) {
+        const errorData = await respuesta.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al enviar datos");
+      }
 
       const resultado = await respuesta.json();
       console.log("✅ Pedido enviado:", resultado);
@@ -56,7 +59,6 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
 
       onPagoContraentrega({ ...form, id: Date.now() });
 
-      // Reiniciar
       setForm({
         nombre: '',
         cedula: '',
@@ -73,12 +75,12 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
           precio: 90000
         }
       });
-
     } catch (error) {
       console.error("❌ Error:", error);
-      alert("❌ Hubo un error al enviar tu pedido. Intenta más tarde.");
+      alert("❌ Hubo un error al enviar tu pedido. Intenta más tarde.\n" + error.message);
     }
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
