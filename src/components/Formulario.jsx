@@ -1,108 +1,85 @@
 import styles from './Formulario.module.css';
+import { useState } from 'react';
 
 function Formulario({ form, setForm, onPagoContraentrega }) {
-  const { producto } = form;
+  const [productos, setProductos] = useState([
+    { 
+      modelo: 'Jordan Cadence',
+      color: '',
+      talla: '',
+      cantidad: 1
+    }
+  ]);
 
-  // Manejo de campos generales
+  // Manejo de cambios
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  // Manejo de campos del producto
-  const handleProductoChange = (e) => {
+  const handleProductoChange = (index, e) => {
     const { name, value } = e.target;
-    setForm({
-      ...form,
-      producto: {
-        ...producto,
-        [name]: ['talla', 'cantidad'].includes(name) ? parseInt(value) || '' : value
+    const nuevosProductos = [...productos];
+    nuevosProductos[index] = {
+      ...nuevosProductos[index],
+      [name]: value
+    };
+    setProductos(nuevosProductos);
+  };
+
+  // Agregar segundo par
+  const agregarProducto = () => {
+    if (productos.length >= 2) return;
+    setProductos([
+      ...productos,
+      {
+        modelo: 'Jordan Cadence',
+        color: '',
+        talla: '',
+        cantidad: 1
       }
-    });
+    ]);
   };
 
-  // Control para limitar la cantidad a 1 o 2
-  const handleCantidadChange = (e) => {
-    let valor = parseInt(e.target.value);
-    if (isNaN(valor)) valor = 1;
-    valor = Math.min(2, Math.max(1, valor));
-    setForm({
-      ...form,
-      producto: { ...producto, cantidad: valor }
-    });
+  // Eliminar producto
+  const eliminarProducto = (index) => {
+    if (productos.length <= 1) return;
+    setProductos(productos.filter((_, i) => i !== index));
   };
 
-  // Calcular total dinámico
+  // Calcular total
   const calcularTotal = () => {
-    const { cantidad } = producto;
-    const precioUnitario = 90000;
-    return cantidad === 2 ? 160000 : cantidad * precioUnitario;
+    const totalPares = productos.reduce((sum, p) => sum + p.cantidad, 0);
+    return totalPares === 2 ? 160000 : totalPares * 90000;
   };
 
-  // Enviar datos a backend
-  const enviarDatos = async () => {
+  // Enviar datos
+  const enviarDatos = async (e) => {
+    e.preventDefault();
     try {
-      const respuesta = await fetch("https://landing-backend-1-v2eh.onrender.com/api/pedidos", {
+      const res = await fetch("https://landing-backend-1-v2eh.onrender.com/api/pedidos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify({
+          cliente: form,
+          productos,
+          total: calcularTotal()
+        })
       });
-
-      if (!respuesta.ok) {
-        const errorData = await respuesta.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al enviar datos");
-      }
-
-      const resultado = await respuesta.json();
-      console.log("✅ Pedido enviado:", resultado);
-      alert("✅ ¡Tu pedido fue registrado exitosamente!");
-
-      onPagoContraentrega({ ...form, id: Date.now() });
-
-      setForm({
-        nombre: '',
-        cedula: '',
-        telefono: '',
-        direccion: '',
-        barrio: '',
-        ciudad: '',
-        departamento: '',
-        producto: {
-          modelo: 'Jordan Cadence',
-          color: '',
-          talla: '',
-          cantidad: 1,
-          precio: 90000
-        }
-      });
+      if (!res.ok) throw new Error('Error al enviar');
+      alert('Pedido registrado!');
+      onPagoContraentrega({ ...form, productos, id: Date.now() });
     } catch (error) {
-      console.error("❌ Error:", error);
-      alert("❌ Hubo un error al enviar tu pedido. Intenta más tarde.\n" + error.message);
+      console.error(error);
+      alert('Error: ' + error.message);
     }
   };
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    enviarDatos();
-  };
-
   return (
-    <form className={styles.formulario} onSubmit={handleSubmit}>
+    <form className={styles.formulario} onSubmit={enviarDatos}>
       <h2>🛍️ Finalizar Compra</h2>
 
-      <div className={styles.resumen}>
-        <h3>Resumen del Pedido</h3>
-        <p><strong>Modelo:</strong> {producto.modelo}</p>
-        <p><strong>Color:</strong> {producto.color}</p>
-        <p><strong>Talla:</strong> {producto.talla}</p>
-        <p><strong>Cantidad:</strong> {producto.cantidad}</p>
-        <p className={styles.total}>
-          Total a pagar: <strong>${calcularTotal().toLocaleString('es-CO')}</strong>
-        </p>
-      </div>
-
-      {/* Datos personales */}
+      {/* Datos Personales */}
       <fieldset>
         <legend>🧍 Datos Personales</legend>
         <input name="nombre" placeholder="Nombre completo" value={form.nombre} onChange={handleChange} required />
@@ -113,69 +90,90 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
       {/* Dirección */}
       <fieldset>
         <legend>📦 Dirección de Envío</legend>
-        <input name="direccion" placeholder="Dirección" value={form.direccion} onChange={handleChange} />
-        <input name="barrio" placeholder="Barrio" value={form.barrio} onChange={handleChange} />
-        <input name="ciudad" placeholder="Ciudad" value={form.ciudad} onChange={handleChange} />
-        <input name="departamento" placeholder="Departamento" value={form.departamento} onChange={handleChange} />
+        <input name="direccion" placeholder="Dirección" value={form.direccion} onChange={handleChange} required />
+        <input name="barrio" placeholder="Barrio" value={form.barrio} onChange={handleChange} required />
+        <input name="ciudad" placeholder="Ciudad" value={form.ciudad} onChange={handleChange} required />
+        <input name="departamento" placeholder="Departamento" value={form.departamento} onChange={handleChange} required />
       </fieldset>
 
-      {/* Producto */}
-      <fieldset>
-        <legend>👟 Detalles del Producto</legend>
+      {/* Productos */}
+      {productos.map((producto, index) => (
+        <fieldset key={index} className={styles.productoFieldset}>
+          <legend>👟 Par {index + 1}</legend>
 
-        <label>Color:</label>
-        <div className={styles.gridOpciones}>
-          {[
-            { nombre: "Negro", codigo: "#000000" },
-            { nombre: "Blanco", codigo: "#FFFFFF" },
-            { nombre: "Rojo", codigo: "#FF0000" }
-          ].map((colorObj) => (
+          <label>Color:</label>
+          <div className={styles.gridOpciones}>
+            {['Negro', 'Blanco', 'Rojo'].map(color => (
+              <button
+                type="button"
+                key={color}
+                onClick={() => handleProductoChange(index, { 
+                  target: { name: 'color', value: color } 
+                })}
+                className={`${styles.colorOption} ${producto.color === color ? styles.activo : ""}`}
+              >
+                <span 
+                  className={styles.colorCircle} 
+                  style={{ 
+                    backgroundColor: color === 'Negro' ? '#000' : 
+                                  color === 'Blanco' ? '#fff' : '#f00',
+                    border: color === 'Blanco' ? '1px solid #ddd' : 'none'
+                  }} 
+                />
+                {color}
+              </button>
+            ))}
+          </div>
+
+          <label>Talla:</label>
+          <select
+            name="talla"
+            value={producto.talla}
+            onChange={(e) => handleProductoChange(index, e)}
+            className={styles.select}
+            required
+          >
+            <option value="">Seleccionar talla</option>
+            {[37, 38, 39, 40, 41, 42, 43].map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+
+          {productos.length > 1 && (
             <button
               type="button"
-              key={colorObj.nombre}
-              onClick={() =>
-                setForm({
-                  ...form,
-                  producto: { ...form.producto, color: colorObj.nombre }
-                })
-              }
-              className={`${styles.colorOption} ${form.producto.color === colorObj.nombre ? styles.activo : ""}`}
+              onClick={() => eliminarProducto(index)}
+              className={styles.eliminarBtn}
             >
-              <span className={styles.colorCircle} style={{ backgroundColor: colorObj.codigo }}></span>
-              {colorObj.nombre}
+              ✖ Eliminar este par
             </button>
-          ))}
-        </div>
+          )}
+        </fieldset>
+      ))}
 
-        {form.producto.color && (
-          <p className={styles.colorSeleccionado}>
-            Color seleccionado: <strong>{form.producto.color}</strong>
-          </p>
+      {/* Resumen */}
+      <div className={styles.resumen}>
+        <h3>Resumen</h3>
+        {productos.map((p, i) => (
+          <div key={i} className={styles.resumenProducto}>
+            <p><strong>Par {i + 1}:</strong> {p.color || 'Sin color'} - Talla {p.talla || 'Sin talla'}</p>
+          </div>
+        ))}
+        <p className={styles.total}>Total a pagar: ${calcularTotal().toLocaleString()}</p>
+        {productos.length < 2 && (
+          <button 
+            type="button" 
+            onClick={agregarProducto}
+            className={styles.agregarBtn}
+          >
+            ➕ Agregar segundo par (2x$160.000)
+          </button>
         )}
+      </div>
 
-        <label>Talla:</label>
-        <select name="talla" value={producto.talla} onChange={handleProductoChange} required>
-          <option value="">Seleccionar talla</option>
-          {[37, 38, 39, 40, 41, 42, 43].map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-
-        <label>Cantidad:</label>
-        <input
-          type="number"
-          min={1}
-          max={2}
-          name="cantidad"
-          value={producto.cantidad}
-          onChange={handleCantidadChange}
-          className={styles.campoCantidad}
-          required
-        />
-        <small>Máximo 2 pares por pedido</small>
-      </fieldset>
-
-      <button type="submit">✅ Confirmar Pedido</button>
+      <button type="submit" className={styles.botonConfirmar}>
+        ✅ Confirmar Pedido
+      </button>
     </form>
   );
 }
