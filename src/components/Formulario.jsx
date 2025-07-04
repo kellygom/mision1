@@ -54,38 +54,48 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
   };
 
   // Enviar datos
-  const enviarDatos = async (e) => {
-    e.preventDefault();
-    try {
-      const data = {
-        nombre: form.nombre,
-        cedula: form.cedula,
-        telefono: form.telefono,
-        direccion: form.direccion,
-        barrio: form.barrio,
-        ciudad: form.ciudad,
-        departamento: form.departamento,
-        modelo: productos.map(p => p.modelo).join(", "),
-        color: productos.map(p => p.color).join(", "),
-        talla: productos.map(p => p.talla).join(", "),
-        cantidad: productos.reduce((sum, p) => sum + p.cantidad, 0),
-        precio: calcularTotal()
-      };
+const enviarDatos = async (e) => {
+  e.preventDefault();
 
-      const res = await fetch("https://landing-backend-1-v2eh.onrender.com/api/pedidos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      if (!res.ok) throw new Error('Error al enviar');
-      alert('Pedido registrado!');
-      onPagoContraentrega({ ...form, productos, id: Date.now() });
-    } catch (error) {
-      console.error(error);
-      alert('Error: ' + error.message);
+  // Validar que todos los productos tengan color y talla
+  for (const [i, producto] of productos.entries()) {
+    if (!producto.color || !producto.talla) {
+      alert(`El par ${i + 1} debe tener color y talla seleccionados`);
+      return;
     }
-  };
+  }
+
+  try {
+    const data = {
+      nombre: form.nombre,
+      cedula: form.cedula,
+      telefono: form.telefono,
+      direccion: form.direccion,
+      barrio: form.barrio,
+      ciudad: form.ciudad,
+      departamento: form.departamento,
+      modelo: productos.map(p => p.modelo).join(", "),
+      color: productos.map(p => p.color).join(", "),
+      talla: productos.map(p => p.talla).join(", "),
+      cantidad: productos.reduce((sum, p) => sum + p.cantidad, 0),
+      precio: calcularTotal()
+    };
+
+    const res = await fetch("https://landing-backend-1-v2eh.onrender.com/api/pedidos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) throw new Error('Error al enviar');
+    alert('Pedido registrado!');
+    onPagoContraentrega({ ...form, productos, id: Date.now() });
+  } catch (error) {
+    console.error(error);
+    alert('Error: ' + error.message);
+  }
+};
+
 
   return (
     <form className={styles.formulario} onSubmit={enviarDatos}>
