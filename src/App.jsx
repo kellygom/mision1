@@ -96,9 +96,14 @@ function App() {
               <p><strong>Colores disponibles:</strong></p>
               <div className="botones-colores">
                 {[
-                  { nombre: "Negro", codigo: "#000000" },
-                  { nombre: "Blanco", codigo: "#ffffff" },
+                  { nombre: "Negro Rojo", codigo: "#000000" },
+                  { nombre: "Blanco Rojo", codigo: "#ffffff" },
                   { nombre: "Rojo", codigo: "#ff0000" },
+                  { nombre: "Gris", codigo: "#9e9e9e" },
+                  { nombre: "Blanco Naranja", codigo: "#ff9800" },
+                  { nombre: "Negro Beige", codigo: "#ffe4c4" },
+                  { nombre: "Negro Amarillo", codigo: "#ffeb3b" },
+                  
                 ].map((colorObj) => (
                   <button
                     key={colorObj.nombre}

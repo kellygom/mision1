@@ -1,30 +1,81 @@
 .producto {
-  width: 100%;
-  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
 }
 
+/* Imagen principal del producto */
 .imagenFondo {
   width: 100%;
   max-width: 400px;
+  height: auto;
+  object-fit: cover;
   border-radius: 12px;
 }
 
+/* Contenedor de miniaturas con scroll horizontal */
 .miniaturas {
-  margin-top: 1rem;
   display: flex;
-  justify-content: center;
-  gap: 10px;
+  overflow-x: auto;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  max-width: 100%;
+  width: 100%;
+  scrollbar-width: none; /* Firefox */
 }
 
-.miniaturas img {
-  width: 80px;
-  height: auto;
-  border-radius: 8px;
-  border: 2px solid #ccc;
+.miniaturas::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+/* Estilo individual de cada miniatura */
+.miniatura {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.2s;
+  flex-shrink: 0; /* Previene que se reduzca si no cabe */
+  border: 2px solid transparent;
+  transition: transform 0.2s ease-in-out;
 }
 
-.miniaturas img:hover {
-  transform: scale(1.05);
+.miniatura:hover {
+  transform: scale(1.1);
+  border-color: #999;
+}
+.miniaturas {
+  display: flex;
+  overflow-x: auto;         /* Habilita scroll horizontal */
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  max-width: 100%;
+  width: 100%;
+  scroll-snap-type: x mandatory; /* Alinea bien los elementos */
+  -webkit-overflow-scrolling: touch; /* Suaviza scroll en móviles */
+  scrollbar-width: thin; /* Firefox */
+}
+
+.miniaturas::-webkit-scrollbar {
+  height: 6px; /* Muestra scroll en desktop si deseas */
+}
+
+.miniaturas::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.miniatura {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 2px solid transparent;
+  transition: transform 0.2s ease-in-out;
+  scroll-snap-align: start;
 }

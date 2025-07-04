@@ -57,15 +57,27 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
   const enviarDatos = async (e) => {
     e.preventDefault();
     try {
+      const data = {
+        nombre: form.nombre,
+        cedula: form.cedula,
+        telefono: form.telefono,
+        direccion: form.direccion,
+        barrio: form.barrio,
+        ciudad: form.ciudad,
+        departamento: form.departamento,
+        modelo: productos.map(p => p.modelo).join(", "),
+        color: productos.map(p => p.color).join(", "),
+        talla: productos.map(p => p.talla).join(", "),
+        cantidad: productos.reduce((sum, p) => sum + p.cantidad, 0),
+        precio: calcularTotal()
+      };
+
       const res = await fetch("https://landing-backend-1-v2eh.onrender.com/api/pedidos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cliente: form,
-          productos,
-          total: calcularTotal()
-        })
+        body: JSON.stringify(data)
       });
+
       if (!res.ok) throw new Error('Error al enviar');
       alert('Pedido registrado!');
       onPagoContraentrega({ ...form, productos, id: Date.now() });
@@ -103,7 +115,7 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
 
           <label>Color:</label>
           <div className={styles.gridOpciones}>
-            {['Negro', 'Blanco', 'Rojo'].map(color => (
+            {['Negro Rojo', 'Blanco Rojo', 'Rojo', 'Gris', 'Blanco Naranja', 'Negro Beige', 'Negro Amarillo'].map(color => (
               <button
                 type="button"
                 key={color}
@@ -115,9 +127,14 @@ function Formulario({ form, setForm, onPagoContraentrega }) {
                 <span 
                   className={styles.colorCircle} 
                   style={{ 
-                    backgroundColor: color === 'Negro' ? '#000' : 
-                                  color === 'Blanco' ? '#fff' : '#f00',
-                    border: color === 'Blanco' ? '1px solid #ddd' : 'none'
+                    backgroundColor: 
+                      color === 'Negro Rojo' ? '#000' :
+                      color === 'Negro Amarillo' ? '#ffeb3b' :
+                      color === 'Blanco Rojo' ? '#fff' :
+                      color === 'Blanco Naranja' ? '#ff9800' :
+                      color === 'Gris' ? '#9e9e9e' :
+                      color === 'Negro Beige' ? '#5a4637' : '#ccc',
+                    border: color === 'Blanco Rojo' ? '1px solid #ddd' : 'none'
                   }} 
                 />
                 {color}
